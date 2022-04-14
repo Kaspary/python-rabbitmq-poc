@@ -1,5 +1,5 @@
 # Python RabbitMQ POC
-![GitHub last commit](https://img.shields.io/github/last-commit/Kaspary/nubank_savemoney_integration)
+![GitHub last commit](https://img.shields.io/github/last-commit/Kaspary/python-rabbitmq-poc)
 
 Sistema para teste de RabbitMQ com python e chamadas assíncronas
 
