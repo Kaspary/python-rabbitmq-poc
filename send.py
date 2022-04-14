@@ -1,6 +1,6 @@
 import pika
 
-def send(message='Hello RabbitMQ!'):
+def send():
     credentials = pika.PlainCredentials('user', 'password')
 
     connection = pika.BlockingConnection(
@@ -14,10 +14,13 @@ def send(message='Hello RabbitMQ!'):
 
     channel.queue_declare(queue='hello')
 
+    message = input('\nMessage: ')
     channel.basic_publish(exchange='', routing_key='hello', body=message)
-    print(f"[x] Sent '{message}'")
     connection.close()
 
 
 if __name__ == '__main__':
-    send()
+    try:
+        send()
+    except Exception as e:
+        print('Exit with error ', str(e))

@@ -1,16 +1,25 @@
-import asyncio
+import multiprocessing
+import time
+
 from receive import main as main_receive
 from send import send
 
-async def main():
-    asyncio.ensure_future(main_receive())
+proc = multiprocessing.Process(target=main_receive, args=())
+proc.start()
+
+def main():
+    print('To exit press CTRL+C')
+    
+    time.sleep(0.5)
     while True:
-        send(input('Mensagem: '))
-        await asyncio.sleep(0.5)
+        send()
+    
+    print('\nEnd proccess...')
+    proc.terminate()
 
 if __name__ == '__main__':
     try:
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(main())
+        main()
     except KeyboardInterrupt:
-        print('Interrupted')
+        proc.terminate()
+        print('\nInterrupted!')
