@@ -1,26 +1,21 @@
-import pika
+import config
+from rabbitmq import RabbitMQ
 
-def send():
-    credentials = pika.PlainCredentials('user', 'password')
+class Sender:
+    
+    RABBITMQ = {
+        'host': config.RABBITMQ_HOST,
+        'user': config.RABBITMQ_USER_PUB,
+        'password': config.RABBITMQ_PASSWORD_PUB,
+        'queue': config.QUEUE_NAME
+    }
 
-    connection = pika.BlockingConnection(
-        pika.ConnectionParameters(
-            host='localhost',
-            credentials=credentials
-        )
-    )
-
-    channel = connection.channel()
-
-    channel.queue_declare(queue='hello')
-
-    message = input('\nMessage: ')
-    channel.basic_publish(exchange='', routing_key='hello', body=message)
-    connection.close()
+    def send_message(self, message):
+        with RabbitMQ(**self.RABBITMQ) as rmq:
+            rmq.send_message(message)
 
 
 if __name__ == '__main__':
-    try:
-        send()
-    except Exception as e:
-        print('Exit with error ', str(e))
+    s = Sender()
+    message = input('Message: ')
+    s.send_message(message)

@@ -1,29 +1,26 @@
-import pika
+import config
+from rabbitmq import RabbitMQ
 
-def main():
-    credentials = pika.PlainCredentials('user', 'password')
+class Receiver:
     
-    connection = pika.BlockingConnection(
-        pika.ConnectionParameters(
-            host='localhost',
-            credentials=credentials
-        )
-    )
+    RABBITMQ = {
+        'host': config.RABBITMQ_HOST,
+        'user': config.RABBITMQ_USER_SUB,
+        'password': config.RABBITMQ_PASSWORD_SUB,
+        'queue': config.QUEUE_NAME
+    }
 
-    channel = connection.channel()
+    def start_consuming(self):
+        with RabbitMQ(**self.RABBITMQ) as rmq:
+            rmq.start_consuming(self.callback)
+    
+    def callback(self, ch, method, properties, body):
+        print("Received: %r" % body.decode())
 
-    channel.queue_declare(queue='hello')
-
-    def callback(ch, method, properties, body):
-        print("\nReceived: %r" % body.decode())
-
-    channel.basic_consume(queue='hello', on_message_callback=callback, auto_ack=True)
-
-    print('Waiting for messages...')
-    channel.start_consuming()
 
 if __name__ == '__main__':
+    s = Receiver()
     try:
-        main()
+        s.start_consuming()
     except KeyboardInterrupt:
-        print('\nInterrupted')
+        print('KeyboardInterrupt')
